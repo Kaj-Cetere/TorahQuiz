@@ -62,10 +62,7 @@ export async function GET(request: Request) {
     const cookieInfo = allCookies.map(cookie => ({
       name: cookie.name,
       // Don't show values for security
-      hasValue: !!cookie.value,
-      path: cookie.path,
-      secure: cookie.secure,
-      httpOnly: cookie.httpOnly
+      hasValue: !!cookie.value
     }));
     
     // Check specifically for Supabase auth cookies
