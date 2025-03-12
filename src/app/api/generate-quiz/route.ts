@@ -28,6 +28,34 @@ setInterval(() => {
   }
 }, 300000); // Run every 5 minutes
 
+// Add a timeout handler and performance optimization
+const TIMEOUT_LIMIT = 9000; // 9 seconds in ms (to stay under Vercel's 10s limit)
+
+// Wrap database operations in a timeout promise
+const withTimeout = <T>(promise: Promise<T>, timeoutMs: number, fallbackValue?: T): Promise<T> => {
+  return new Promise<T>((resolve, reject) => {
+    const timeoutId = setTimeout(() => {
+      if (fallbackValue !== undefined) {
+        console.log(`Operation timed out after ${timeoutMs}ms, using fallback`);
+        resolve(fallbackValue);
+      } else {
+        reject(new Error(`Operation timed out after ${timeoutMs}ms`));
+      }
+    }, timeoutMs);
+
+    promise.then(
+      result => {
+        clearTimeout(timeoutId);
+        resolve(result);
+      },
+      error => {
+        clearTimeout(timeoutId);
+        reject(error);
+      }
+    );
+  });
+};
+
 export async function POST(request: Request) {
   const requestId = Math.random().toString(36).substring(2, 15);
   console.log(`[${requestId}] Starting quiz generation request`);
