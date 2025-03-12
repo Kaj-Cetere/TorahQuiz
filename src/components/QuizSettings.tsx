@@ -125,7 +125,7 @@ export default function QuizSettingsComponent({ initialSettings, onSave }: QuizS
             onChange={(e) => handleChange('includeExplanations', e.target.checked)}
             className="w-5 h-5 rounded border-gray-600 bg-gray-700 text-indigo-500 focus:ring-indigo-500 focus:ring-offset-gray-800"
           />
-          <span className="text-gray-300">Include Explanations with Answers</span>
+          <span className="text-gray-300">Include Explanations (shown only after quiz completion)</span>
         </label>
       </div>
       

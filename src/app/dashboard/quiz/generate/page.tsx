@@ -167,9 +167,12 @@ export default function GenerateQuizPage() {
     }
   };
 
-  // Toggle explanation visibility
+  // This function will no longer be used during the quiz, but will be kept for the review page
   const handleToggleExplanation = () => {
-    setShowExplanation(!showExplanation);
+    // Only allow toggling explanations after quiz completion
+    if (quizCompleted) {
+      setShowExplanation(!showExplanation);
+    }
   };
 
   // Submit the completed quiz
@@ -523,8 +526,8 @@ export default function GenerateQuizPage() {
           </div>
         )}
         
-        {/* Explanation (if available and toggled) */}
-        {showExplanation && currentQuestion.explanation && (
+        {/* Explanation (if available and toggled) - Only show after quiz is completed */}
+        {quizCompleted && showExplanation && currentQuestion.explanation && (
           <div className="mt-6 p-4 bg-gray-700/50 rounded-lg border border-gray-600">
             <h3 className="font-medium text-blue-300 mb-2">Explanation:</h3>
             <p className="text-gray-300">{currentQuestion.explanation}</p>
@@ -551,15 +554,6 @@ export default function GenerateQuizPage() {
             </svg>
             Previous
           </button>
-          
-          {quizSettings?.includeExplanations && (
-            <button
-              onClick={handleToggleExplanation}
-              className="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg text-gray-300 border border-gray-600 transition-colors"
-            >
-              {showExplanation ? 'Hide' : 'Show'} Explanation
-            </button>
-          )}
         </div>
         
         <div>

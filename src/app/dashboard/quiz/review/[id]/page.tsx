@@ -190,6 +190,7 @@ export default function QuizReviewPage({ params }: ReviewPageProps) {
             <button 
               onClick={toggleExplanations}
               className="px-3 py-1 bg-gray-700 hover:bg-gray-600 rounded-lg text-sm text-gray-300 border border-gray-600 transition-colors"
+              aria-label="Toggle explanation visibility"
             >
               {showExplanations ? 'Hide Explanations' : 'Show Explanations'}
             </button>
