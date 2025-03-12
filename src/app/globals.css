@@ -1,0 +1,94 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+/* Theme variables */
+:root {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0f1218;
+    --foreground: #ededed;
+  }
+}
+
+html, body {
+  height: 100%;
+  min-height: 100vh;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+#__next, main {
+  min-height: 100vh;
+}
+
+/* Custom animations for high-tech theme - toned down versions */
+@keyframes ping-slow {
+  0% {
+    transform: scale(1);
+    opacity: 0.15;
+  }
+  50% {
+    transform: scale(1.3);
+    opacity: 0.08;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 0.15;
+  }
+}
+
+@keyframes pulse-width {
+  0%, 100% {
+    width: 30%;
+  }
+  50% {
+    width: 90%;
+  }
+}
+
+@keyframes dashoffset {
+  from {
+    stroke-dashoffset: 100;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.animate-ping-slow {
+  animation: ping-slow 3.5s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+.animate-pulse-width {
+  animation: pulse-width 2.5s ease-in-out infinite;
+}
+
+.animate-dashoffset {
+  animation: dashoffset 1.8s ease-out forwards;
+}
+
+/* Custom background classes */
+.bg-subtle-blue-gradient {
+  @apply bg-gradient-to-br from-blue-950/50 via-indigo-950/40 to-slate-950/60 fixed inset-0 min-h-screen;
+  height: 100vh;
+  min-height: 100vh;
+  width: 100vw;
+}
