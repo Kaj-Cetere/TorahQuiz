@@ -13,7 +13,7 @@ export default function LoginPage() {
       <div className="max-w-md w-full z-10">
         <div className="text-center mb-10">
           <h1 className="text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-500 mb-3">
-            Torah Quiz
+            Torah Quizician
           </h1>
           <p className="text-gray-300 text-lg">
             Track your Torah study and test your knowledge
@@ -25,7 +25,7 @@ export default function LoginPage() {
         </div>
         
         <div className="mt-8 text-center text-sm text-gray-400">
-          Encouraging Chazarah through a beautiful modern interface
+          Personalized quizzes across everything you've ever learned
         </div>
       </div>
     </div>

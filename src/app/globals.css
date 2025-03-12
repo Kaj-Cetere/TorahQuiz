@@ -11,7 +11,7 @@
 :root {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-sans: var(--font-inter), system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 }
 
@@ -30,7 +30,7 @@ html, body {
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
   min-height: 100vh;
   overflow-x: hidden;
 }
@@ -73,6 +73,24 @@ body {
   }
 }
 
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(-20px) scale(1.05);
+  }
+}
+
+@keyframes float-delayed {
+  0%, 100% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(-15px) scale(1.03);
+  }
+}
+
 .animate-ping-slow {
   animation: ping-slow 3.5s cubic-bezier(0, 0, 0.2, 1) infinite;
 }
@@ -85,9 +103,18 @@ body {
   animation: dashoffset 1.8s ease-out forwards;
 }
 
+.animate-float {
+  animation: float 12s ease-in-out infinite;
+}
+
+.animate-float-delayed {
+  animation: float-delayed 15s ease-in-out infinite;
+  animation-delay: -7s;
+}
+
 /* Custom background classes */
 .bg-subtle-blue-gradient {
-  @apply bg-gradient-to-br from-blue-950/50 via-indigo-950/40 to-slate-950/60 fixed inset-0 min-h-screen;
+  @apply bg-gradient-to-br from-blue-950/70 via-indigo-950/50 to-slate-950/70 fixed inset-0 min-h-screen;
   height: 100vh;
   min-height: 100vh;
   width: 100vw;

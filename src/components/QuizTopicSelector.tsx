@@ -217,6 +217,35 @@ export default function QuizTopicSelector({ userId, onTopicSelected, predefinedT
     onTopicSelected(selection);
   };
 
+  // Render tractate items with improved styling
+  const renderTractateItem = (tractate: string) => {
+    const isLearned = learnedTractates.includes(tractate);
+    
+    return (
+      <button
+        key={tractate}
+        onClick={() => handleTractateSelect(tractate)}
+        className={`
+          flex items-center justify-between px-4 py-3 mb-2 rounded-lg border transition-all duration-200
+          ${selectedTractate === tractate 
+            ? 'bg-indigo-500/20 border-indigo-500/40 text-indigo-300 shadow-[0_0_8px_rgba(99,102,241,0.3)]' 
+            : isLearned || isExploringMode
+              ? 'bg-gray-700/70 border-gray-600/70 text-gray-200 hover:bg-gray-600/80 hover:border-gray-500'
+              : 'bg-gray-800/50 border-gray-700/50 text-gray-400 cursor-not-allowed opacity-60'
+          }
+        `}
+        disabled={!isLearned && !isExploringMode}
+      >
+        <span className="font-medium">{tractate}</span>
+        {isLearned && (
+          <span className="text-xs py-0.5 px-2 bg-green-600/20 text-green-400 rounded-full border border-green-500/20">
+            Learned
+          </span>
+        )}
+      </button>
+    );
+  };
+
   if (error) {
     return (
       <div className="bg-gray-800/70 backdrop-blur-sm rounded-xl shadow-xl p-6 border border-gray-700">
@@ -234,67 +263,102 @@ export default function QuizTopicSelector({ userId, onTopicSelected, predefinedT
   }
 
   return (
-    <div className="bg-gray-800/70 backdrop-blur-sm rounded-xl shadow-xl p-6 border border-gray-700">
+    <div className="bg-gradient-to-br from-gray-800/80 to-gray-900/90 backdrop-blur-sm rounded-xl shadow-xl p-6 border border-gray-700/50 hover:border-indigo-500/30 transition-colors">
       <h2 className="text-xl font-semibold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-500 mb-6">
         Select Quiz Topic
       </h2>
       
+      {/* Selection Type Tabs */}
+      <div className="flex space-x-2 mb-6">
+        <button 
+          onClick={() => handleTypeChange('tractate')}
+          className={`flex-1 py-2 px-4 rounded-lg border transition-all duration-200 ${
+            selection.type === 'tractate' 
+              ? 'bg-indigo-500/20 border-indigo-500/40 text-indigo-300 shadow-[0_0_8px_rgba(99,102,241,0.3)]'
+              : 'bg-gray-700/70 border-gray-700 text-gray-300 hover:bg-gray-600/80'
+          }`}
+        >
+          By Tractate
+        </button>
+        <button 
+          onClick={() => handleTypeChange('daf')}
+          className={`flex-1 py-2 px-4 rounded-lg border transition-all duration-200 ${
+            selection.type === 'daf' 
+              ? 'bg-indigo-500/20 border-indigo-500/40 text-indigo-300 shadow-[0_0_8px_rgba(99,102,241,0.3)]'
+              : 'bg-gray-700/70 border-gray-700 text-gray-300 hover:bg-gray-600/80'
+          }`}
+        >
+          By Daf
+        </button>
+        {topics.length > 0 && (
+          <button 
+            onClick={() => handleTypeChange('topic')}
+            className={`flex-1 py-2 px-4 rounded-lg border transition-all duration-200 ${
+              selection.type === 'topic' 
+                ? 'bg-indigo-500/20 border-indigo-500/40 text-indigo-300 shadow-[0_0_8px_rgba(99,102,241,0.3)]'
+                : 'bg-gray-700/70 border-gray-700 text-gray-300 hover:bg-gray-600/80'
+            }`}
+          >
+            By Topic
+          </button>
+        )}
+      </div>
+      
       {/* Exploration Mode Toggle */}
       <div className="mb-6">
-        <label className="flex items-center gap-3 cursor-pointer">
-          <input
-            type="checkbox"
-            checked={isExploringMode}
-            onChange={toggleExplorationMode}
-            className="w-5 h-5 rounded border-gray-600 bg-gray-700 text-indigo-500 focus:ring-indigo-500 focus:ring-offset-gray-800"
-          />
-          <span className="text-gray-300">
-            Explore and test on material I haven't marked as learned
+        <label className="flex items-center gap-3 cursor-pointer group p-3 rounded-lg bg-gray-700/30 border border-gray-600/30 hover:bg-gray-700/50 transition-colors">
+          <div className="relative">
+            <input
+              type="checkbox"
+              checked={isExploringMode}
+              onChange={toggleExplorationMode}
+              className="w-5 h-5 rounded border-gray-600 bg-gray-700 text-indigo-500 focus:ring-indigo-500 focus:ring-offset-gray-800 transition-colors"
+            />
             {isExploringMode && (
-              <span className="ml-2 text-yellow-400 text-xs">
-                (Note: This won't mark content as learned)
-              </span>
+              <span className="absolute inset-0 bg-indigo-500/10 rounded animate-ping-slow pointer-events-none"></span>
             )}
+          </div>
+          <div>
+            <span className="text-gray-200 group-hover:text-white transition-colors font-medium">Exploration Mode</span>
+            <p className="text-gray-300 text-sm mt-1">Access all tractates, even those you haven't learned yet</p>
+          </div>
+        </label>
+      </div>
+      
+      {/* Randomize Toggle */}
+      <div className="mb-6">
+        <label className="flex items-center gap-3 cursor-pointer group">
+          <div className="relative">
+            <input
+              type="checkbox"
+              checked={selection.randomize}
+              onChange={handleRandomizeToggle}
+              className="w-5 h-5 rounded border-gray-600 bg-gray-700 text-indigo-500 focus:ring-indigo-500 focus:ring-offset-gray-800"
+            />
+            {selection.randomize && (
+              <span className="absolute inset-0 bg-indigo-500/10 rounded animate-ping-slow pointer-events-none"></span>
+            )}
+          </div>
+          <span className="text-gray-300 group-hover:text-gray-200 transition-colors">
+            Randomize Questions
           </span>
         </label>
       </div>
       
-      {/* Selection Type */}
-      <div className="mb-6">
-        <label className="block text-gray-300 mb-2">
-          What would you like to be tested on?
-        </label>
-        <div className="grid grid-cols-2 gap-2 mb-4">
-          {(['tractate', 'daf', 'topic'] as const).map((type) => (
-            <button
-              key={type}
-              className={`py-2 px-4 rounded-lg border ${
-                selection.type === type 
-                  ? 'bg-indigo-500/20 border-indigo-500/50 text-blue-300' 
-                  : 'bg-gray-700 border-gray-600 text-gray-300 hover:bg-gray-600'
-              }`}
-              onClick={() => handleTypeChange(type)}
-            >
-              {type === 'tractate' ? 'Entire Tractate' : 
-               type === 'daf' ? 'Specific Daf/Amud' : 
-               'Conceptual Topic'}
-            </button>
-          ))}
-        </div>
-        
-        {/* Random Selection Button */}
-        <button
-          onClick={handleRandomSelection}
-          className="w-full py-2 px-4 bg-gray-700 hover:bg-gray-600 rounded-lg text-gray-300 border border-gray-600 transition-colors flex items-center justify-center gap-2"
-        >
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 13l-7 7-7-7m14-8l-7 7-7-7"></path>
+      {/* Random Selection Button */}
+      <button
+        onClick={handleRandomSelection}
+        className="w-full mb-6 py-2.5 px-4 bg-gray-700/60 hover:bg-gray-600/70 rounded-lg text-gray-300 hover:text-gray-100 font-medium border-0 transition-all duration-200 hover:shadow-md"
+      >
+        <span className="flex items-center justify-center gap-2">
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
           </svg>
-          Random Selection
-        </button>
-      </div>
+          Pick Random Topic
+        </span>
+      </button>
       
-      {/* Tractate Selection */}
+      {/* Main content based on selection type */}
       {selection.type === 'tractate' && (
         <div className="mb-6">
           <label className="block text-gray-300 mb-2">
@@ -305,7 +369,7 @@ export default function QuizTopicSelector({ userId, onTopicSelected, predefinedT
               <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-400"></div>
             </div>
           ) : (!isExploringMode && learnedTractates.length === 0) ? (
-            <div className="text-gray-400 py-4 text-center">
+            <div className="text-gray-300 py-4 text-center">
               You haven't learned any tractates yet.
               {!isExploringMode && (
                 <div className="mt-2">
@@ -320,19 +384,7 @@ export default function QuizTopicSelector({ userId, onTopicSelected, predefinedT
             </div>
           ) : (
             <div className="grid grid-cols-2 gap-2 max-h-60 overflow-y-auto">
-              {(isExploringMode ? allTractates : learnedTractates).map((tractate) => (
-                <button
-                  key={tractate}
-                  className={`py-2 px-4 rounded-lg border ${
-                    selection.tractate === tractate 
-                      ? 'bg-indigo-500/20 border-indigo-500/50 text-blue-300' 
-                      : 'bg-gray-700 border-gray-600 text-gray-300 hover:bg-gray-600'
-                  }`}
-                  onClick={() => handleTractateSelect(tractate)}
-                >
-                  {tractate}
-                </button>
-              ))}
+              {(isExploringMode ? allTractates : learnedTractates).map((tractate) => renderTractateItem(tractate))}
             </div>
           )}
         </div>
@@ -373,7 +425,7 @@ export default function QuizTopicSelector({ userId, onTopicSelected, predefinedT
                   <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-400"></div>
                 </div>
               ) : dafimInTractate.length === 0 ? (
-                <div className="text-gray-400 py-4 text-center">
+                <div className="text-gray-300 py-4 text-center">
                   {isExploringMode 
                     ? "No dafim available for this tractate."
                     : "You haven't learned any dafim in this tractate yet."
@@ -418,7 +470,7 @@ export default function QuizTopicSelector({ userId, onTopicSelected, predefinedT
             Select Topic
           </label>
           {topics.length === 0 ? (
-            <div className="text-gray-400 py-4 text-center">
+            <div className="text-gray-300 py-4 text-center">
               No topics available.
             </div>
           ) : (
@@ -437,19 +489,6 @@ export default function QuizTopicSelector({ userId, onTopicSelected, predefinedT
         </div>
       )}
       
-      {/* Randomize toggle */}
-      <div className="mb-6">
-        <label className="flex items-center gap-3 cursor-pointer">
-          <input
-            type="checkbox"
-            checked={selection.randomize}
-            onChange={handleRandomizeToggle}
-            className="w-5 h-5 rounded border-gray-600 bg-gray-700 text-indigo-500 focus:ring-indigo-500 focus:ring-offset-gray-800"
-          />
-          <span className="text-gray-300">Randomize questions within selected content</span>
-        </label>
-      </div>
-      
       {/* Submit Button */}
       <button
         onClick={handleSubmit}
@@ -458,9 +497,14 @@ export default function QuizTopicSelector({ userId, onTopicSelected, predefinedT
           (selection.type === 'daf' && (!selection.tractate || !selection.daf)) ||
           (selection.type === 'topic' && !selection.topic)
         }
-        className="w-full py-3 px-4 bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-700 hover:to-blue-700 rounded-lg text-white font-medium shadow-lg border border-indigo-500/10 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        className="w-full py-3 px-4 bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-700 hover:to-blue-700 rounded-lg text-white font-medium shadow-lg border border-indigo-500/10 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed hover:shadow-[0_0_15px_rgba(99,102,241,0.4)] transform hover:-translate-y-0.5"
       >
-        Generate Quiz
+        <span className="flex items-center justify-center gap-2">
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+          </svg>
+          Generate Quiz
+        </span>
       </button>
     </div>
   );
