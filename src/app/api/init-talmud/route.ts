@@ -77,6 +77,9 @@ const TRACTATE_INFO: TractateMap = {
 // Batch size for insertion
 const BATCH_SIZE = 2; // Adjust based on performance and rate limits
 
+// Add the maxDuration export at the top of the file
+export const maxDuration = 60;
+
 export async function GET(request: Request) {
   try {
     const url = new URL(request.url);

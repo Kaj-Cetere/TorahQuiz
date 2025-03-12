@@ -1,0 +1,16 @@
+{
+  "functions": {
+    "src/app/api/**/*": {
+      "maxDuration": 60
+    },
+    "src/app/api/generate-quiz/**/*": {
+      "maxDuration": 60
+    },
+    "src/app/api/init-texts/**/*": {
+      "maxDuration": 60
+    },
+    "src/app/api/init-talmud/**/*": {
+      "maxDuration": 60
+    }
+  }
+} 

@@ -9,6 +9,9 @@ const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
 // Create a service role client that can bypass RLS policies
 const serviceClient = createClient(supabaseUrl, supabaseServiceKey);
 
+// Add the maxDuration export at the top of the file
+export const maxDuration = 60;
+
 // A simple endpoint to initialize the database with some texts
 export async function GET() {
   try {
