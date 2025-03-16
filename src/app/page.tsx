@@ -40,10 +40,10 @@ export default function HomePage() {
         
         <div className="relative z-10 text-center mb-12">
           <h1 className="text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-500 mb-4">
-            Torah Quiz
+            Torah Quizician
           </h1>
           <p className="text-gray-400 text-xl max-w-lg">
-            Your personalized Talmud learning companion
+            Your personalized Gemara learning companion
           </p>
         </div>
 

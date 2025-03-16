@@ -5,7 +5,7 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
 export const metadata: Metadata = {
-  title: "Torah Quiz - Track Your Learning",
+  title: "Torah Quizician - Track Your Learning",
   description: "Track your Torah study progress and test your knowledge with personalized quizzes.",
 };
 

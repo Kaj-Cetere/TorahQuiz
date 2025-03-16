@@ -118,7 +118,7 @@ export default function QuizPage() {
       <QuizNavigation />
       
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-gray-100 mb-2">Torah Quiz</h1>
+        <h1 className="text-2xl font-bold text-gray-100 mb-2">Torah Quizician</h1>
         <p className="text-gray-400">Test your knowledge of the texts you've learned</p>
       </div>
       
