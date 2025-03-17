@@ -17,7 +17,7 @@ export default function QuizNavigation() {
       </div>
       
       <h1 className="text-3xl md:text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-indigo-400 to-violet-500 mb-4">
-        Torah Quiz
+        Torah Quizician
       </h1>
       
       <p className="text-gray-300 max-w-3xl mb-8 text-lg leading-relaxed">

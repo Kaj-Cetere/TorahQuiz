@@ -6,6 +6,7 @@ import { supabase } from '@/lib/supabase/client';
 import { generateQuiz, saveQuizSession } from '@/lib/utils/quiz-generator';
 import { QuizSettings, QuizTopicSelection, QuizQuestion, QuestionType } from '@/lib/types';
 import QuizNavigation from '@/components/QuizNavigation';
+import ReactMarkdown from 'react-markdown';
 
 export default function GenerateQuizPage() {
   const router = useRouter();
@@ -459,7 +460,9 @@ export default function GenerateQuizPage() {
       {/* Question card */}
       <div className="bg-gray-800/70 backdrop-blur-sm rounded-xl shadow-xl p-6 border border-gray-700 mb-6">
         <h2 className="text-xl font-semibold text-gray-100 mb-6">
-          {currentQuestion.question}
+          <div className="markdown-content">
+            <ReactMarkdown>{currentQuestion.question}</ReactMarkdown>
+          </div>
         </h2>
         
         {/* Multiple choice options */}
@@ -475,7 +478,9 @@ export default function GenerateQuizPage() {
                     : 'bg-gray-700 border-gray-600 text-gray-300 hover:bg-gray-600'
                 }`}
               >
-                {option}
+                <div className="markdown-content">
+                  <ReactMarkdown>{option}</ReactMarkdown>
+                </div>
               </button>
             ))}
           </div>
@@ -530,7 +535,9 @@ export default function GenerateQuizPage() {
         {quizCompleted && showExplanation && currentQuestion.explanation && (
           <div className="mt-6 p-4 bg-gray-700/50 rounded-lg border border-gray-600">
             <h3 className="font-medium text-blue-300 mb-2">Explanation:</h3>
-            <p className="text-gray-300">{currentQuestion.explanation}</p>
+            <div className="text-gray-300 markdown-content">
+              <ReactMarkdown>{currentQuestion.explanation}</ReactMarkdown>
+            </div>
             
             <div className="mt-3 pt-3 border-t border-gray-600">
               <p className="text-gray-400 text-sm">

@@ -6,6 +6,7 @@ import { supabase } from '@/lib/supabase/client';
 import QuizNavigation from '@/components/QuizNavigation';
 import { QuizQuestion, QuestionType } from '@/lib/types';
 import QuizDownloadButton from '@/components/QuizDownloadButton';
+import ReactMarkdown from 'react-markdown';
 
 interface ReviewPageProps {
   params: {
@@ -209,7 +210,10 @@ export default function QuizReviewPage({ params }: ReviewPageProps) {
             >
               <div className="flex items-start justify-between mb-3">
                 <h3 className="text-lg font-medium text-white flex-1">
-                  {index + 1}. {question.question}
+                  {index + 1}.{' '}
+                  <span className="markdown-content">
+                    <ReactMarkdown>{question.question}</ReactMarkdown>
+                  </span>
                 </h3>
                 <span className="bg-gray-700 text-gray-300 text-xs px-2 py-1 rounded-full">
                   {formatQuestionType(question.type)}
@@ -242,7 +246,9 @@ export default function QuizReviewPage({ params }: ReviewPageProps) {
                           <div className="w-5 h-5"></div>
                         )}
                       </div>
-                      <span>{option}</span>
+                      <span className="markdown-content">
+                        <ReactMarkdown>{option}</ReactMarkdown>
+                      </span>
                     </div>
                   ))}
                 </div>
@@ -253,12 +259,14 @@ export default function QuizReviewPage({ params }: ReviewPageProps) {
                   <div className="flex flex-col ml-4">
                     <div className="mb-2">
                       <span className="text-gray-400 mr-2">Correct answer:</span>
-                      <span className="text-green-400 font-medium">{question.correctAnswer}</span>
+                      <span className="text-green-400 font-medium markdown-content">
+                        <ReactMarkdown>{question.correctAnswer}</ReactMarkdown>
+                      </span>
                     </div>
                     <div>
                       <span className="text-gray-400 mr-2">Your answer:</span>
-                      <span className={`font-medium ${isCorrect(question) ? 'text-green-400' : 'text-red-400'}`}>
-                        {getUserAnswer(question) || '(No answer provided)'}
+                      <span className={`font-medium markdown-content ${isCorrect(question) ? 'text-green-400' : 'text-red-400'}`}>
+                        <ReactMarkdown>{getUserAnswer(question) || '(No answer provided)'}</ReactMarkdown>
                       </span>
                     </div>
                   </div>
@@ -268,7 +276,9 @@ export default function QuizReviewPage({ params }: ReviewPageProps) {
               {showExplanations && question.explanation && (
                 <div className="mt-4 p-3 bg-gray-800/50 rounded-lg border border-gray-700">
                   <h4 className="text-sm font-medium text-blue-400 mb-2">Explanation:</h4>
-                  <p className="text-gray-300 text-sm whitespace-pre-line">{question.explanation}</p>
+                  <div className="text-gray-300 text-sm whitespace-pre-line markdown-content">
+                    <ReactMarkdown>{question.explanation}</ReactMarkdown>
+                  </div>
                 </div>
               )}
               
