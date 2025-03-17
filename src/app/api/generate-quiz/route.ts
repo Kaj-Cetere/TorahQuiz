@@ -5,12 +5,18 @@ import { QuizSettings, QuizTopicSelection, QuestionType, TorahText } from '@/lib
 import { supabase } from '@/lib/supabase/client';
 import { createClient } from '@supabase/supabase-js';
 import { retrieveAmudimByTopic, fallbackRetrieveAmudimByTopic, fetchBilingualAmudim } from '@/lib/utils/rag-topic-search';
+import { GoogleGenerativeAI } from '@google/generative-ai';  // Import Google Gen AI SDK
 
 // Set the maximum duration for this function to 60 seconds
 export const maxDuration = 60;
 
 // This code runs server-side, so we can use the regular OPENAI_API_KEY
 const openaiApiKey = process.env.OPENAI_API_KEY;
+// Google Gen AI API Key - throw an error if it's not defined
+const googleApiKey = process.env.GOOGLE_API_KEY || '';
+if (!googleApiKey) {
+  console.error('GOOGLE_API_KEY environment variable is not defined');
+}
 
 // Create a service role client for accessing torah_texts directly
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
@@ -51,7 +57,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const { userId, settings, topicSelection } = body;
+    const { userId, settings, topicSelection, model = 'gemini' } = body;
     
     // Check required parameters
     if (!userId || !settings || !topicSelection) {
@@ -71,7 +77,8 @@ export async function POST(request: Request) {
           ? [...settings.questionTypes].sort().join(',') 
           : settings.questionTypes
       }, 
-      topicSelection 
+      topicSelection,
+      model 
     });
     
     // Check for duplicate requests
@@ -94,23 +101,44 @@ export async function POST(request: Request) {
         ...settings, 
         questionTypes: Array.isArray(settings.questionTypes) ? settings.questionTypes.length : settings.questionTypes 
       } : undefined, 
-      topicSelection 
+      topicSelection,
+      model 
     });
     
-    if (!openaiApiKey) {
+    // Check if we have the required API keys based on the model selected
+    if (model === 'openai' && !openaiApiKey) {
       console.log(`[${requestId}] Missing OpenAI API key`);
       return NextResponse.json(
         { error: 'Server configuration error: Missing OpenAI API key' }, 
         { status: 500 }
       );
+    } else if (model === 'gemini' && !googleApiKey) {
+      console.log(`[${requestId}] Missing Google API key`);
+      return NextResponse.json(
+        { error: 'Server configuration error: Missing Google API key' }, 
+        { status: 500 }
+      );
     }
 
-    // Initialize LLM with server-side API key
-    const llm = new ChatOpenAI({
-      openAIApiKey: openaiApiKey,
-      modelName: 'gpt-4o-mini',  // Use a more capable model for better question generation
-      temperature: 0.3,     // Lower temperature for more focused output
-    });
+    // Initialize LLM based on selected model
+    let llm;
+    if (model === 'gemini') {
+      // For Gemini, we'll implement a compatible interface with ChatOpenAI
+      // since we'll need to adapt it to work with our existing code
+      const genAI = new GoogleGenerativeAI(googleApiKey);
+      const geminiModel = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
+      
+      // No need to initialize OpenAI LLM if using Gemini
+      console.log(`[${requestId}] Using Gemini model for question generation`);
+    } else {
+      // Default to OpenAI
+      llm = new ChatOpenAI({
+        openAIApiKey: openaiApiKey,
+        modelName: 'gpt-4o-mini',  // Use a more capable model for better question generation
+        temperature: 0.3,     // Lower temperature for more focused output
+      });
+      console.log(`[${requestId}] Using OpenAI model for question generation`);
+    }
     
     // Fetch relevant texts from the database
     console.log(`[${requestId}] Fetching relevant texts for topic:`, topicSelection);
@@ -301,25 +329,58 @@ FORMAT YOUR RESPONSE AS A JSON ARRAY OF OBJECTS with the following structure:
     
     // Generate questions
     const prompt = await promptTemplate.format({});
-    const response = await llm.invoke(prompt);
-    
-    // Extract text content from LangChain response safely
+
+    // Generate questions based on selected model
     let responseText = '';
-    
-    if (typeof response.content === 'string') {
-      // Simple string content
-      responseText = response.content;
-    } else if (Array.isArray(response.content)) {
-      // Array of content blocks, concatenate all text
-      responseText = response.content
-        .map(item => {
-          if (typeof item === 'string') return item;
-          if (item && typeof item === 'object' && 'type' in item && item.type === 'text') {
-            return 'text' in item ? String(item.text || '') : '';
-          }
-          return '';
-        })
-        .join('');
+    if (model === 'gemini') {
+      // Use Gemini model for generation
+      try {
+        if (!googleApiKey) {
+          throw new Error('Google API key is not configured');
+        }
+        
+        const genAI = new GoogleGenerativeAI(googleApiKey);
+        const geminiModel = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
+        
+        console.log(`[${requestId}] Sending prompt to Gemini model`);
+        const geminiResponse = await geminiModel.generateContent(prompt);
+        responseText = geminiResponse.response.text();
+        console.log(`[${requestId}] Received response from Gemini model`);
+      } catch (error: any) {
+        console.error(`[${requestId}] Error with Gemini model:`, error);
+        return NextResponse.json(
+          { error: `Error generating questions with Gemini: ${error.message || 'Unknown error'}` }, 
+          { status: 500 }
+        );
+      }
+    } else {
+      // Use OpenAI model for generation
+      if (!llm) {
+        console.error(`[${requestId}] OpenAI LLM not initialized`);
+        return NextResponse.json(
+          { error: 'Server configuration error: OpenAI LLM not initialized' }, 
+          { status: 500 }
+        );
+      }
+      
+      const response = await llm.invoke(prompt);
+      
+      // Extract text content from LangChain response safely
+      if (typeof response.content === 'string') {
+        // Simple string content
+        responseText = response.content;
+      } else if (Array.isArray(response.content)) {
+        // Array of content blocks, concatenate all text
+        responseText = response.content
+          .map(item => {
+            if (typeof item === 'string') return item;
+            if (item && typeof item === 'object' && 'type' in item && item.type === 'text') {
+              return 'text' in item ? String(item.text || '') : '';
+            }
+            return '';
+          })
+          .join('');
+      }
     }
     
     // Parse JSON from response

@@ -24,8 +24,8 @@ const initializeOpenAI = () => {
   
   return new ChatOpenAI({
     openAIApiKey: openaiKey,
-    modelName: 'gpt-4-turbo',
-    temperature: 0.7,
+    modelName: 'gpt-4o-mini',
+    temperature: 0.3,
   });
 };
 
@@ -72,11 +72,12 @@ const requestCache = new Map<string, {timestamp: number, result: Promise<any>}>(
 export async function generateQuiz(
   userId: string,
   settings: QuizSettings,
-  topicSelection: QuizTopicSelection
+  topicSelection: QuizTopicSelection,
+  model: 'openai' | 'gemini' = 'gemini'  // Changed default from 'openai' to 'gemini'
 ): Promise<QuizQuestion[]> {
   try {
     // Create a cache key based on the request parameters
-    const cacheKey = JSON.stringify({ userId, settings, topicSelection });
+    const cacheKey = JSON.stringify({ userId, settings, topicSelection, model });
     
     // Check if we've made this exact request recently and return the cached result
     const now = Date.now();
@@ -105,6 +106,7 @@ export async function generateQuiz(
           userId,
           settings,
           topicSelection,
+          model,  // Pass the model parameter to the API
         }),
       });
     
