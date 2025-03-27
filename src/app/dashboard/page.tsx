@@ -276,6 +276,15 @@ export default function DashboardPage() {
                   </svg>
                   {showQuizSettings ? 'Hide Quiz Settings' : 'Configure Quiz Settings'}
                 </button>
+                <Link
+                  href="/dashboard/quiz/history"
+                  className="w-full flex items-center justify-center py-3 px-4 rounded-lg shadow-lg font-medium text-gray-100 bg-gradient-to-r from-emerald-700 to-green-700 hover:from-emerald-800 hover:to-green-800 transition-colors border-0 shadow-[0_0_0_1px_rgba(16,185,129,0.2)]"
+                >
+                  <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                  </svg>
+                  View Quiz History
+                </Link>
               </div>
             </div>
 
